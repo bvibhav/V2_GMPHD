@@ -19,4 +19,4 @@ for i = 1:numel(sensorMeasurements)
     plot(sensorMeasurements{1,i}.xMeas,sensorMeasurements{1,i}.yMeas,'.r');
 end
     
-%%
+%% Initialize GMPHD
