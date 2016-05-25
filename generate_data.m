@@ -2,8 +2,8 @@ function generate_data()
 %GENERATE_DATA Summary of this function goes here
 %   Generate simulated data for GMPHD filter
 
-figure(101); hold on; axis([-500 500 -500 500]); box on;
-figure(102); hold on; axis([-500 500 -500 500]); box on;
+figure(101); hold on; axis([-500 500 -500 500]); box on; grid on;
+figure(102); hold on; axis([-500 500 -500 500]); box on; grid on;
 
 % Initialize targets
 nTargets = 3;
@@ -64,8 +64,8 @@ G = [dT^2; ...
     dT];
   
 % For 2D systems
-F = [F zeros(size(F)); zeros(size(F)) F]
-G = [G zeros(size(G)); zeros(size(G)) G]
+F = [F zeros(size(F)); zeros(size(F)) F];
+G = [G zeros(size(G)); zeros(size(G)) G];
 
 % noise factor for generating trajectories
 pNoise = .1;
@@ -107,11 +107,11 @@ for i = 1:simTime
       sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)];
       sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)];
     end
-    % Add noise
-    for i_randCounter = 1:floor(rand*10)
-      sensor.xMeas = [sensor.xMeas -500+1000*rand];
-      sensor.yMeas = [sensor.yMeas -500+1000*rand];
-    end
+  end
+  % Add random noise points
+  for i_randCounter = 1:floor(rand*20)
+    sensor.xMeas = [sensor.xMeas -500+1000*rand];
+    sensor.yMeas = [sensor.yMeas -500+1000*rand];
   end
   pause(.01);
   sensorMeasurements{i} = sensor;
