@@ -9,8 +9,12 @@ figure(101); clf(101); axis([-500 500 -500 500]);
 figure(102); clf(102); axis([-500 500 -500 500]);
 
 %% Generate simulated data
-% generate_data();
-load('measurements.mat');
+try
+  load('measurements.mat');
+catch
+  generate_data();
+  load('measurements.mat');
+end
 
 %% Plot simulated measurements
 figure(101); box on; grid on; hold on;
@@ -78,7 +82,7 @@ for k = 1:1
     for i_obs = 1:numel(sensorMeasurements{1,k}.xMeas)
         L=L+1;
         for j = 1:nHyp
-            HypU(L*nHyp+j).wk = pDetection*HypU(j).wk + ;
+            HypU(L*nHyp+j).wk = pDetection*HypU(j).wk;
         end
     end
 end
