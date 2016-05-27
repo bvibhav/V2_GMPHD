@@ -109,7 +109,7 @@ for i = 1:simTime
     end
   end
   % Add random noise points
-  for i_randCounter = 1:floor(rand*20)
+  for i_randCounter = 1:floor(rand*5)
     sensor.xMeas = [sensor.xMeas -500+1000*rand];
     sensor.yMeas = [sensor.yMeas -500+1000*rand];
   end
