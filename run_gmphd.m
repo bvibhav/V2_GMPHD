@@ -76,35 +76,41 @@ for k = 1:1
     for j = 1:nHyp
         HypP(j).wk = (1 - pDetection) * HypP(j).wk;
     end
-    L=0;
+    L_val=0;
     for i_obs = 1:numel(sensorMeasurements{1,k}.xMeas)
-        L=L+1;
+        L_val=L_val+1;
         z = [sensorMeasurements{1,k}.xMeas(i_obs);...
              sensorMeasurements{1,k}.xMeas(i_obs)];
         w_sum = 0;
         for j = 1:nHyp
-            HypP(L*nHyp+j).wk = pDetection*HypP(j).wk;
-            HypP(L*nHyp+j).mk = HypP(j).mk + HypP(j).Kk*(z-HypP(j).neta);
-            HypP(L*nHyp+j).Pk = HypP(j).Pk;
-            w_sum = w_sum + HypP(L*nHyp+j).wk;
+            HypP(L_val*nHyp+j).wk = pDetection*HypP(j).wk;
+            HypP(L_val*nHyp+j).mk = HypP(j).mk + HypP(j).Kk*(z-HypP(j).neta);
+            HypP(L_val*nHyp+j).Pk = HypP(j).Pk;
+            w_sum = w_sum + HypP(L_val*nHyp+j).wk;
         end
         for j = 1:nHyp
-          HypP(L*nHyp+j).wk = HypP(L*nHyp+j).wk/w_sum;
+          HypP(L_val*nHyp+j).wk = HypP(L_val*nHyp+j).wk/w_sum;
         end
     end
-    nHyp = L*nHyp + nHyp;
+    nHyp = L_val*nHyp + nHyp;
     
     % Merging/Pruning
     wk = extractfield(HypP,'wk');
-    l = 0
-    I = find(wk >= 0.25)  % Pruning 
+    l = 0;
+    I = find(wk >= 0.25);  % Pruning 
+    I_full = I;
     while(~isempty(I))
       l=l+1;
       [~,j] = max(wk(I));   % index of maximum in pruned targets
-      j = I(j)              % index of maximum in actual hypotheses 
+      j = I(j);             % index of maximum in actual hypotheses 
       % Compute L(equality of gaussian components) with component j
+      L_val = [];
       for i_merge = 1:numel(I)
-        I(i_merge)
+        L_tmp = (HypP(I(i_merge)).mk - HypP(j).mk)' * pinv(HypP(I(i_merge)).Pk) * (HypP(I(i_merge)).mk - HypP(j).mk);
+        L_val = [L_val L_tmp];
       end
+      L = find(L_val<=1);
+      I(L)
+      I(L) = [];
     end
 end
