@@ -96,6 +96,15 @@ for k = 1:1
     
     % Merging/Pruning
     wk = extractfield(HypP,'wk');
-    [~,idx] = max(wk);
-    
+    l = 0
+    I = find(wk >= 0.25)  % Pruning 
+    while(~isempty(I))
+      l=l+1;
+      [~,j] = max(wk(I));   % index of maximum in pruned targets
+      j = I(j)              % index of maximum in actual hypotheses 
+      % Compute L(equality of gaussian components) with component j
+      for i_merge = 1:numel(I)
+        I(i_merge)
+      end
+    end
 end
