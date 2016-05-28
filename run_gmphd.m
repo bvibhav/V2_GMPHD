@@ -45,16 +45,17 @@ R = 100*eye(2);
 
 for k = 1:1
     % Prediction of new births
-    [x_pos,y_pos] = meshgrid([-300 300]);
+    [x_pos,y_pos] = meshgrid([-250 250]);
     for j = 1:4
-        HypP(nHyp+j).wk = .1;
+        HypP(nHyp+j).wk = .25 + abs(randn)/100;
         HypP(nHyp+j).mk = [x_pos(j);...
                            0;...
                            y_pos(j);...
                            0];
-        HypP(nHyp+j).Pk = 10000*eye(4).*diag([1 .001 1 .001]);
+        HypP(nHyp+j).Pk = 25000*eye(4).*diag([1 .001 1 .001]);
         figure(102); hold on;
-        h_ellips(j) = ellips(x_pos(j),y_pos(j),HypP(j).Pk,'r');
+        h_ellips(j) = ellips(x_pos(j),y_pos(j),...
+                              diag([HypP(nHyp+j).Pk(1,1) HypP(nHyp+j).Pk(3,3)]),'r');
     end
     nHyp = nHyp + 4;
     
@@ -92,4 +93,9 @@ for k = 1:1
         end
     end
     nHyp = L*nHyp + nHyp;
+    
+    % Merging/Pruning
+    wk = extractfield(HypP,'wk');
+    [~,idx] = max(wk);
+    
 end
