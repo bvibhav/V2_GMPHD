@@ -36,13 +36,13 @@ HypP = structHyp;
 nHyp = 0;
 
 % code for testing algorithm
-HypP.wk = 1;
-HypP.mk(1) = -100;
-HypP.mk(2) = 0;
-HypP.mk(3) = -400;
-HypP.mk(4) = 7;
-HypP.Pk = .1 * eye(4);
-nHyp = 1;
+% HypP.wk = 1;
+% HypP.mk(1) = -100;
+% HypP.mk(2) = 0;
+% HypP.mk(3) = -400;
+% HypP.mk(4) = 7;
+% HypP.Pk = .1 * eye(4);
+% nHyp = 1;
 
 %% Filter
 pD = .9;
@@ -71,7 +71,7 @@ for k = 1:numel(sensorMeasurements)
     % Prediction of new births
     [x_pos,y_pos] = meshgrid([-250 250]);
     for j = 1:4
-        HypP(nHyp+j).wk = 1 + abs(randn)/100;
+        HypP(nHyp+j).wk = .5 + abs(randn)/100;
         HypP(nHyp+j).mk = [x_pos(j);...
                            0.1;...
                            y_pos(j);...
@@ -131,7 +131,7 @@ for k = 1:numel(sensorMeasurements)
         L_tmp = (HypP(I(i_merge)).mk - HypP(j).mk)' * pinv(HypP(I(i_merge)).Pk) * (HypP(I(i_merge)).mk - HypP(j).mk);
         L_val = [L_val L_tmp];
       end
-      L = find(L_val<=1);
+      L = find(L_val<=.1);
       I(L);
       HypN(l).wk = sum(wk(I(L)));
       HypN(l).mk = sum(repmat(wk(I(L)),4,1).*mk(:,I(L)),2)/HypN(l).wk;
@@ -147,7 +147,7 @@ for k = 1:numel(sensorMeasurements)
     end
     HypP = HypN;
     nHyp = numel(HypN);
-    for i = 1:numel(HypP)
+    for i = 1:4%numel(HypP)
       figure(102); hold on;
       plot(HypP(i).mk(1),HypP(i).mk(3),'.b');
     end
