@@ -35,18 +35,9 @@ HypP = structHyp;
 HypP = structHyp;
 nHyp = 0;
 
-% code for testing algorithm
-HypP.wk = 1;
-HypP.mk(1) = -100;
-HypP.mk(2) = 0;
-HypP.mk(3) = -400;
-HypP.mk(4) = 7;
-HypP.Pk = .1 * eye(4);
-nHyp = 1;
-
 %% Filter
 pD = .9;
-pS = 1;
+pS = .99;
 
 dT = 1;
 F = [1 dT;...
@@ -59,7 +50,7 @@ H = [1 0 0 0;...
 R = 100*eye(2);
 Q = 10*eye(4);
 
-for k = 1:numel(sensorMeasurements)
+for k = 1:100
     % Prediction of existing targets
     for j = 1:numel(nHyp)
         if(nHyp==0) break; end
@@ -71,12 +62,12 @@ for k = 1:numel(sensorMeasurements)
     % Prediction of new births
     [x_pos,y_pos] = meshgrid([-250 250]);
     for j = 1:4
-        HypP(nHyp+j).wk = 1 + abs(randn)/100;
+        HypP(nHyp+j).wk = .25 + abs(randn)/100;
         HypP(nHyp+j).mk = [x_pos(j);...
                            0.1;...
                            y_pos(j);...
                            0.1];
-        HypP(nHyp+j).Pk = 2000000*eye(4).*diag([1 .001 1 .001]);
+        HypP(nHyp+j).Pk = 25000*eye(4).*diag([1 .001 1 .001]);
 %         figure(102); hold on;
 %         h_ellips(j) = ellips(x_pos(j),y_pos(j),...
 %                               diag([HypP(nHyp+j).Pk(1,1) HypP(nHyp+j).Pk(3,3)]),'r');
@@ -95,23 +86,23 @@ for k = 1:numel(sensorMeasurements)
     for j = 1:nHyp
         HypP(j).wk = (1 - pD) * HypP(j).wk;
     end
-    l_count = 0;
+    L_val=0;
     for i_obs = 1:numel(sensorMeasurements{1,k}.xMeas)
-        l_count=l_count+1;
+        L_val=L_val+1;
         z = [sensorMeasurements{1,k}.xMeas(i_obs);...
-             sensorMeasurements{1,k}.yMeas(i_obs)];
+             sensorMeasurements{1,k}.xMeas(i_obs)];
         w_sum = 0;
         for j = 1:nHyp
-            HypP(l_count*nHyp+j).wk = pD*HypP(j).wk;
-            HypP(l_count*nHyp+j).mk = HypP(j).mk + HypP(j).Kk*(z-HypP(j).neta);
-            HypP(l_count*nHyp+j).Pk = HypP(j).Pk;
-            w_sum = w_sum + HypP(l_count*nHyp+j).wk;
+            HypP(L_val*nHyp+j).wk = pD*HypP(j).wk;
+            HypP(L_val*nHyp+j).mk = HypP(j).mk + HypP(j).Kk*(z-HypP(j).neta);
+            HypP(L_val*nHyp+j).Pk = HypP(j).Pk;
+            w_sum = w_sum + HypP(L_val*nHyp+j).wk;
         end
         for j = 1:nHyp
-          HypP(l_count*nHyp+j).wk = HypP(l_count*nHyp+j).wk/w_sum;
+          HypP(L_val*nHyp+j).wk = HypP(L_val*nHyp+j).wk/w_sum;
         end
     end
-    nHyp = l_count*nHyp + nHyp;
+    nHyp = L_val*nHyp + nHyp;
     
     HypN = structHyp;
     % Merging/Pruning
@@ -151,6 +142,4 @@ for k = 1:numel(sensorMeasurements)
       figure(102); hold on;
       plot(HypP(i).mk(1),HypP(i).mk(3),'.b');
     end
-    pause(.01);
-    disp(['Iteration:' num2str(k)]);
 end
