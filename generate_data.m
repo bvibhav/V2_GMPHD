@@ -2,11 +2,11 @@ function generate_data()
 %GENERATE_DATA Summary of this function goes here
 %   Generate simulated data for GMPHD filter
 
-figure(101); hold on; axis([-500 500 -500 500]); box on; grid on;
-figure(102); hold on; axis([-500 500 -500 500]); box on; grid on;
+figure(101); clf(101); hold on; axis([-500 500 -500 500]); box on; grid on;
+figure(102); clf(102); hold on; axis([-500 500 -500 500]); box on; grid on;
 
 % Initialize targets
-nTargets = 3;
+nTargets = 1;
 simTime = 100;
 
 for i = 1:nTargets
@@ -26,23 +26,23 @@ target(1).y = -400;
 target(1).vx = 0;
 target(1).vy = 7;
 
-target(2).x = 100;
-target(2).y = 400;
-target(2).vx = 0;
-target(2).vy = -7;
-% target(2).spawn = 'y';
-% target(2).spawnTime = 30;
-% target(2).spawnTarget.vx = 2;
-% target(2).spawnTarget.vy = -4;
-
-target(3).x = -300;
-target(3).y = -300;
-target(3).vx = 6;
-target(3).vy = 6;
-target(3).spawn = 'y';
-target(3).spawnTime = simTime/2;
-target(3).spawnTarget.vx = -2;
-target(3).spawnTarget.vy = 6;
+% target(2).x = 100;
+% target(2).y = 400;
+% target(2).vx = 0;
+% target(2).vy = -7;
+% % target(2).spawn = 'y';
+% % target(2).spawnTime = 30;
+% % target(2).spawnTarget.vx = 2;
+% % target(2).spawnTarget.vy = -4;
+% 
+% target(3).x = -300;
+% target(3).y = -300;
+% target(3).vx = 6;
+% target(3).vy = 6;
+% target(3).spawn = 'y';
+% target(3).spawnTime = simTime/2;
+% target(3).spawnTarget.vx = -2;
+% target(3).spawnTarget.vy = 6;
 
 % Initialize target states
 for i = 1:nTargets
@@ -68,7 +68,7 @@ F = [F zeros(size(F)); zeros(size(F)) F];
 G = [G zeros(size(G)); zeros(size(G)) G];
 
 % noise factor for generating trajectories
-pNoise = .1;
+pNoise = .05;
 
 sensorMeasurements = {};
 for i = 1:simTime
@@ -104,8 +104,8 @@ for i = 1:simTime
     target(i_targetCounter).state = F * target(i_targetCounter).state+ G * wk;
     
     if rand < .9 % Pdetection
-      sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)];
-      sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)];
+      sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+10*randn];
+      sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+10*randn];
     end
   end
   % Add random noise points
@@ -121,9 +121,9 @@ end
 
 save('measurements.mat', 'sensorMeasurements');
 
-disp('Press any key to continue'); pause;
-figure(101); clf(101); box on; grid on; hold on;
-figure(102); clf(102); box on; grid on; hold on;
+% disp('Press any key to continue'); pause;
+% figure(101); clf(101); box on; grid on; hold on;
+% figure(102); clf(102); box on; grid on; hold on;
 
 end
 
