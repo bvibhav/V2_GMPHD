@@ -26,7 +26,7 @@ for i_obs = 1:numel(sensorScan.xMeas)
         w_sum = w_sum + Hyp(l_count*nHyp+j).wk;
     end
     for j = 1:nHyp
-      Hyp(l_count*nHyp+j).wk = Hyp(l_count*nHyp+j).wk/w_sum;
+      Hyp(l_count*nHyp+j).wk = Hyp(l_count*nHyp+j).wk/(w_sum);
     end
 end
 % nHyp = l_count*nHyp + nHyp;
