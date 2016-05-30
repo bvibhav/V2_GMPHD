@@ -1,4 +1,4 @@
-%% Clear and customize MATLAB 
+%% Clear & csstomize MATLAB 
 clc;
 clear;
 set(0,'defaultfigurecolor',[1 1 1])
