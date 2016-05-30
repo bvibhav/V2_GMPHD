@@ -34,7 +34,11 @@ target(2).vy = -7;
 % target(2).spawnTime = 30;
 % target(2).spawnTarget.vx = 2;
 % target(2).spawnTarget.vy = -4;
-% 
+target(2).x = 300;
+target(2).y = 0;
+target(2).vx = -7;
+target(2).vy = 0;
+
 % target(3).x = -300;
 % target(3).y = -300;
 % target(3).vx = 6;
@@ -112,8 +116,8 @@ for i = 1:simTime
     target(i_targetCounter).state = F * target(i_targetCounter).state+ G * wk;
     
     if rand < 1 % Pdetection
-      sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+10*randn];
-      sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+10*randn];
+      sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+2*randn];
+      sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+2*randn];
     end
   end
   % Add random noise points

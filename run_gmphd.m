@@ -78,7 +78,10 @@ for k = 1:numel(sensorMeasurements)
     wk = extractfield(HypP,'wk');
     disp(['sum of wk:' num2str(sum(wk))])
     figure(102);hold on; box on; grid on;
-    for i = 1:numel(wk)%round(sum(wk))
+    for i = 1:round(sum(wk))
+        if(i>numel(wk))
+            break;
+        end
         plot(HypP(i).mk(1),HypP(i).mk(3),'.k');
     end
     % State extraction
