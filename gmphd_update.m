@@ -11,7 +11,7 @@ for j = 1:nHyp
     Hyp(j).Kk = Hyp(j).Pk * model.H' * pinv(Hyp(j).Sk);
     Hyp(j).Pk = (eye(4) - Hyp(j).Kk * model.H) * Hyp(j).Pk;
 end
-    
+
 % update
 l_count = 0;
 for i_obs = 1:numel(sensorScan.xMeas)
@@ -20,7 +20,7 @@ for i_obs = 1:numel(sensorScan.xMeas)
          sensorScan.yMeas(i_obs)];
     w_sum = 0;
     for j = 1:nHyp
-        Hyp(l_count*nHyp+j).wk = model.pD*Hyp(j).wk;
+        Hyp(l_count*nHyp+j).wk = model.pD*Hyp(j).wk *  mvnpdf(z, Hyp(j).neta,Hyp(j).Sk); % mvnpdf taken from Bryan Clarke's code
         Hyp(l_count*nHyp+j).mk = Hyp(j).mk + Hyp(j).Kk*(z-Hyp(j).neta);
         Hyp(l_count*nHyp+j).Pk = Hyp(j).Pk;
         w_sum = w_sum + Hyp(l_count*nHyp+j).wk;

@@ -1,4 +1,4 @@
-%% Clear & csstomize MATLAB 
+%% Clear and csstomize MATLAB 
 clc;
 clear;
 set(0,'defaultfigurecolor',[1 1 1])
@@ -8,12 +8,12 @@ figure(102); clf(102); axis([-500 500 -500 500]);
 
 %% GMPHD modelling params
 model.prune_T = .05;
-model.merge_U = .1;
-model.pD = .9;
-model.pS = .99;
+model.merge_U = 10;
+model.pD = 1;
+model.pS = .9;
 model.dT = 1;
-model.noise_process = .01;
-model.noise_sensor = 20;
+model.noise_process = .1;
+model.noise_sensor = 300;
 model.F = [1 model.dT;...
            0 1];
 model.F = [model.F zeros(size(model.F));...
@@ -38,6 +38,15 @@ for j = 1:numel(sensorMeasurements)
     plot(sensorMeasurements{1,j}.xMeas,sensorMeasurements{1,j}.yMeas,'.r');
 end
 
+%% plot groundtruth
+figure(102); box on; grid on; hold on;
+title('Tracks');
+for j = 1:numel(groundTruth)
+    h_102(1) = plot(groundTruth(j).track.x, groundTruth(j).track.y,'-b');
+end
+h_102(2) = plot(-500,500,'.k');
+legend(h_102,'Groundtruth','GMPHD');
+
 %% structure for hypotheses and tracks
 duration = 100;
 structHyp = struct(...
@@ -51,14 +60,14 @@ structHyp = struct(...
 HypP = structHyp;
 
 % values for test
-HypP.wk = 1;
-HypP.mk = [-100, 0, -400, 7]';
-Hyp.Pk = eye(4);
+% HypP.wk = 1;
+% HypP.mk = [-100, 0, -400, 7]';
+% Hyp.Pk = eye(4);
 
 %% Filter
 for k = 1:numel(sensorMeasurements)
     % Prediction
-    HypP = gmphd_predict(HypP, model);
+    HypP = gmphd_predict(HypP, model, sensorMeasurements{1,k},k);
     
     % Update
     HypP = gmphd_update( HypP, model, sensorMeasurements{1,k});
@@ -66,22 +75,26 @@ for k = 1:numel(sensorMeasurements)
     % Prune and Merge
     HypP = gmphd_merge( HypP, model.prune_T, model.merge_U );
     
-%     wk = extractfield(HypP,'wk')
-%     sum(wk)
+    wk = extractfield(HypP,'wk');
+    disp(['sum of wk:' num2str(sum(wk))])
+    figure(102);hold on; box on; grid on;
+    for i = 1:numel(wk)%round(sum(wk))
+        plot(HypP(i).mk(1),HypP(i).mk(3),'.k');
+    end
     % State extraction
-    Xk = [];
-    for i = 1:numel(HypP)
-        if(HypP(i).wk > .5)
-            for j = 1:round(HypP(i).wk)
-                Xk = [Xk, HypP(i).mk];
-            end
-        end
-    end
-    
-    if(~isempty(Xk))
-        figure(102); hold on;
-        plot(Xk(1,:),Xk(3,:),'.k');
-    end
+%     Xk = [];
+%     for i = 1:numel(HypP)
+%         if(HypP(i).wk > .5)
+%             for j = 1:round(HypP(i).wk)
+%                 Xk = [Xk, HypP(i).mk];
+%             end
+%         end
+%     end
+%     
+%     if(~isempty(Xk))
+%         figure(102); hold on;
+%         plot(Xk(1,:),Xk(3,:),'.k');
+%     end
     
     
     pause(.01);

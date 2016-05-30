@@ -6,7 +6,7 @@ figure(101); clf(101); hold on; axis([-500 500 -500 500]); box on; grid on;
 figure(102); clf(102); hold on; axis([-500 500 -500 500]); box on; grid on;
 
 % Initialize targets
-nTargets = 1;
+nTargets = 2;
 simTime = 100;
 
 for i = 1:nTargets
@@ -26,14 +26,14 @@ target(1).y = -400;
 target(1).vx = 0;
 target(1).vy = 7;
 
-% target(2).x = 100;
-% target(2).y = 400;
-% target(2).vx = 0;
-% target(2).vy = -7;
-% % target(2).spawn = 'y';
-% % target(2).spawnTime = 30;
-% % target(2).spawnTarget.vx = 2;
-% % target(2).spawnTarget.vy = -4;
+target(2).x = 100;
+target(2).y = 400;
+target(2).vx = 0;
+target(2).vy = -7;
+% target(2).spawn = 'y';
+% target(2).spawnTime = 30;
+% target(2).spawnTarget.vx = 2;
+% target(2).spawnTarget.vy = -4;
 % 
 % target(3).x = -300;
 % target(3).y = -300;
@@ -50,6 +50,9 @@ for i = 1:nTargets
                         target(i).vx;...
                         target(i).y;...
                         target(i).vy];
+    groundTruth(i).track.x = [];
+    groundTruth(i).track.y = [];
+    groundTruth(i).track.t = [];
 end
 
 % Sampling time
@@ -78,6 +81,9 @@ for i = 1:simTime
   for i_targetCounter = 1:nTargets
     figure(101); hold on;
     plot(target(i_targetCounter).state(1), target(i_targetCounter).state(3),'.b');
+    groundTruth(i_targetCounter).track.x = [groundTruth(i_targetCounter).track.x    target(i_targetCounter).state(1)];
+    groundTruth(i_targetCounter).track.y = [groundTruth(i_targetCounter).track.y    target(i_targetCounter).state(3)];
+    groundTruth(i_targetCounter).track.t = [groundTruth(i_targetCounter).track.t    i];
     
     if(target(i_targetCounter).spawn=='y' & target(i_targetCounter).spawnTime==i)
       nTargets = nTargets + 1;
@@ -93,7 +99,9 @@ for i = 1:simTime
                           target(nTargets).vx;...
                           target(nTargets).y;...
                           target(nTargets).vy];
-
+        groundTruth(nTargets).track.x = [];
+        groundTruth(nTargets).track.y = [];
+        groundTruth(nTargets).track.t = [];
     end
     
     SQRT = sqrt(target(i_targetCounter).state(2)^2 + target(i_targetCounter).state(4)^2);
@@ -103,23 +111,23 @@ for i = 1:simTime
     wk = [pNoiseX;pNoiseY] .* wgn(2,1,10);
     target(i_targetCounter).state = F * target(i_targetCounter).state+ G * wk;
     
-    if rand < .9 % Pdetection
+    if rand < 1 % Pdetection
       sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+10*randn];
       sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+10*randn];
     end
   end
   % Add random noise points
-%   for i_randCounter = 1:floor(rand*5)
-%     sensor.xMeas = [sensor.xMeas -500+1000*rand];
-%     sensor.yMeas = [sensor.yMeas -500+1000*rand];
-%   end
+  for i_randCounter = 1:floor(rand*5)
+    sensor.xMeas = [sensor.xMeas -500+1000*rand];
+    sensor.yMeas = [sensor.yMeas -500+1000*rand];
+  end
   pause(.01);
   sensorMeasurements{i} = sensor;
   figure(102); hold on;
   plot(sensor.xMeas,sensor.yMeas,'.r');
 end
 
-save('measurements.mat', 'sensorMeasurements');
+save('measurements.mat', 'sensorMeasurements', 'groundTruth');
 
 % disp('Press any key to continue'); pause;
 % figure(101); clf(101); box on; grid on; hold on;
