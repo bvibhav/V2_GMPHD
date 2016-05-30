@@ -6,7 +6,7 @@ figure(101); clf(101); hold on; axis([-500 500 -500 500]); box on; grid on;
 figure(102); clf(102); hold on; axis([-500 500 -500 500]); box on; grid on;
 
 % Initialize targets
-nTargets = 2;
+nTargets = 3;
 simTime = 100;
 
 for i = 1:nTargets
@@ -39,14 +39,14 @@ target(2).y = 0;
 target(2).vx = -7;
 target(2).vy = 0;
 
-% target(3).x = -300;
-% target(3).y = -300;
-% target(3).vx = 6;
-% target(3).vy = 6;
-% target(3).spawn = 'y';
-% target(3).spawnTime = simTime/2;
-% target(3).spawnTarget.vx = -2;
-% target(3).spawnTarget.vy = 6;
+target(3).x = -300;
+target(3).y = -300;
+target(3).vx = 6;
+target(3).vy = 6;
+target(3).spawn = 'y';
+target(3).spawnTime = simTime/2;
+target(3).spawnTarget.vx = -2;
+target(3).spawnTarget.vy = 6;
 
 % Initialize target states
 for i = 1:nTargets
@@ -115,9 +115,9 @@ for i = 1:simTime
     wk = [pNoiseX;pNoiseY] .* wgn(2,1,10);
     target(i_targetCounter).state = F * target(i_targetCounter).state+ G * wk;
     
-    if rand < 1 % Pdetection
-      sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+2*randn];
-      sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+2*randn];
+    if rand < .9 % Pdetection
+      sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+5*randn];
+      sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+5*randn];
     end
   end
   % Add random noise points

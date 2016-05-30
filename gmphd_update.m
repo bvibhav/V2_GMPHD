@@ -20,13 +20,14 @@ for i_obs = 1:numel(sensorScan.xMeas)
          sensorScan.yMeas(i_obs)];
     w_sum = 0;
     for j = 1:nHyp
-        Hyp(l_count*nHyp+j).wk = model.pD*Hyp(j).wk *  mvnpdf(z, Hyp(j).neta,Hyp(j).Sk); % mvnpdf taken from Bryan Clarke's code
+        Hyp(l_count*nHyp+j).wk = model.pD*Hyp(j).wk *  mvnpdf(z, Hyp(j).neta,Hyp(j).Sk);
+        % mvnpdf = exp(-.5*(z-Hyp(j).neta)' * pinv(Hyp(j).Sk) * (z-Hyp(j).neta))/sqrt(((2*pi)^numel(z))*det(Hyp(j).Sk))
         Hyp(l_count*nHyp+j).mk = Hyp(j).mk + Hyp(j).Kk*(z-Hyp(j).neta);
         Hyp(l_count*nHyp+j).Pk = Hyp(j).Pk;
         w_sum = w_sum + Hyp(l_count*nHyp+j).wk;
     end
     for j = 1:nHyp
-      Hyp(l_count*nHyp+j).wk = Hyp(l_count*nHyp+j).wk/(1.0e-05 + w_sum);
+      Hyp(l_count*nHyp+j).wk = Hyp(l_count*nHyp+j).wk/(model.falseAlarms.density + w_sum);
     end
 end
 % nHyp = l_count*nHyp + nHyp;
