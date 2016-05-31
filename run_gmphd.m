@@ -7,13 +7,15 @@ figure(101); clf(101); axis([-500 500 -500 500]);
 figure(102); clf(102); axis([-500 500 -500 500]);
 
 %% GMPHD modelling params
-model.prune_T = .05;
-model.merge_U = 10;
-model.pD = 1;
+model.prune_T = .01;
+model.merge_U = 1;
+model.pD = .9;
 model.pS = .9;
+model.falseAlarms.mean = 30;
 model.dT = 1;
 model.noise_process = .1;
-model.noise_sensor = 300;
+nSigma = 3;
+model.noise_sensor = nSigma^2 * 10;
 model.F = [1 model.dT;...
            0 1];
 model.F = [model.F zeros(size(model.F));...
@@ -21,7 +23,14 @@ model.F = [model.F zeros(size(model.F));...
 model.Q = model.noise_process * eye(4);
 model.H = [1 0 0 0;...
            0 0 1 0];
-model.R = model.noise_sensor * eye(2);
+model.R = [10^2 0;
+           0 10^2];
+model.oSpaceVolume = 1000*1000;
+% model.xRes = sqrt(model.R(1,1));
+% model.yRes = sqrt(model.R(2,2));
+% model.nCell = model.oSpace/(model.xRes*model.yRes)
+model.falseAlarms.density = model.falseAlarms.mean/model.oSpaceVolume;
+disp(model)
 
 %% Generate simulated data
 try
@@ -37,6 +46,19 @@ title('Measurements');
 for j = 1:numel(sensorMeasurements)
     plot(sensorMeasurements{1,j}.xMeas,sensorMeasurements{1,j}.yMeas,'.r');
 end
+set(gca, ...
+  'Box'         , 'on'     , ...
+  'TickDir'     , 'out'     , ...
+  'TickLength'  , [.02 .02] , ...
+  'XMinorTick'  , 'on'      , ...
+  'YMinorTick'  , 'on'      , ...
+  'YGrid'       , 'on'      , ...
+  'XColor'      , [.3 .3 .3], ...
+  'YColor'      , [.3 .3 .3], ...
+  'XTick'       , -500:20:500, ...
+  'YTick'       , -500:20:500, ...
+  'LineWidth'   , 1         );
+set(gca,'position',[0 0 1 1],'units','normalized')
 
 %% plot groundtruth
 figure(102); box on; grid on; hold on;
@@ -46,6 +68,19 @@ for j = 1:numel(groundTruth)
 end
 h_102(2) = plot(-500,500,'.k');
 legend(h_102,'Groundtruth','GMPHD');
+set(gca, ...
+  'Box'         , 'on'     , ...
+  'TickDir'     , 'out'     , ...
+  'TickLength'  , [.02 .02] , ...
+  'XMinorTick'  , 'on'      , ...
+  'YMinorTick'  , 'on'      , ...
+  'YGrid'       , 'on'      , ...
+  'XColor'      , [.3 .3 .3], ...
+  'YColor'      , [.3 .3 .3], ...
+  'XTick'       , -500:100:500, ...
+  'YTick'       , -500:100:500, ...
+  'LineWidth'   , 1         );
+set(gca,'position',[0 0 1 1],'units','normalized')
 
 %% structure for hypotheses and tracks
 duration = 100;
@@ -78,7 +113,10 @@ for k = 1:numel(sensorMeasurements)
     wk = extractfield(HypP,'wk');
     disp(['sum of wk:' num2str(sum(wk))])
     figure(102);hold on; box on; grid on;
-    for i = 1:numel(wk)%round(sum(wk))
+    for i = 1:round(sum(wk))
+        if(i>numel(wk))
+            break;
+        end
         plot(HypP(i).mk(1),HypP(i).mk(3),'.k');
     end
     % State extraction
