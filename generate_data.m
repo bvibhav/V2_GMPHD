@@ -115,16 +115,23 @@ for i = 1:simTime
     wk = [pNoiseX;pNoiseY] .* wgn(2,1,10);
     target(i_targetCounter).state = F * target(i_targetCounter).state+ G * wk;
     
-    if rand < .9 % Pdetection
+    if rand < .95 % Pdetection
       sensor.xMeas = [sensor.xMeas target(i_targetCounter).state(1)+5*randn];
       sensor.yMeas = [sensor.yMeas target(i_targetCounter).state(3)+5*randn];
     end
   end
-  % Add random noise points
-  for i_randCounter = 1:floor(rand*5)
+  
+  PRN = poissrnd(12.5);
+  disp(['PRN is ' num2str(PRN)])
+  for i_randCounter = 1:PRN
     sensor.xMeas = [sensor.xMeas -500+1000*rand];
     sensor.yMeas = [sensor.yMeas -500+1000*rand];
   end
+  % Add random noise points
+%   for i_randCounter = 1:floor(rand*5)
+%     sensor.xMeas = [sensor.xMeas -500+1000*rand];
+%     sensor.yMeas = [sensor.yMeas -500+1000*rand];
+%   end
   pause(.01);
   sensorMeasurements{i} = sensor;
   figure(102); hold on;

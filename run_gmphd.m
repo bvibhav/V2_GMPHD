@@ -7,13 +7,13 @@ figure(101); clf(101); axis([-500 500 -500 500]);
 figure(102); clf(102); axis([-500 500 -500 500]);
 
 %% GMPHD modelling params
-model.prune_T = .01;
-model.merge_U = 1;
-model.pD = .9;
-model.pS = .9;
-model.falseAlarms.mean = 30;
+model.prune_T = power(10,-2);
+model.merge_U = 5;
+model.pD = .95;
+model.pS = .99;
+model.falseAlarms.mean = 12.5;
 model.dT = 1;
-model.noise_process = .1;
+model.noise_process = .05;
 nSigma = 3;
 model.noise_sensor = nSigma^2 * 10;
 model.F = [1 model.dT;...
