@@ -10,10 +10,10 @@ figure(102); clf(102); axis([-500 500 -500 500]);
 model.prune_T = .01;
 model.merge_U = 1;
 model.pD = .9;
-model.pS = .9;
+model.pS = .95;
 model.falseAlarms.mean = 30;
 model.dT = 1;
-model.noise_process = .1;
+model.noise_process = .3;
 nSigma = 3;
 model.noise_sensor = nSigma^2 * 10;
 model.F = [1 model.dT;...
